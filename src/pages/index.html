@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Hello World!</title>
+  <link rel="stylesheet" href="../assets/styles/index.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+</head>
+
+<body>
+
+  <div id="warp" class="overlay mx-auto px-lg-4 px-md-4 hidden">
+    <div class="col-lg-4 col-md-6 col-sm-3" id="notification">
+      <p id="message" class="mb-2"></p>
+      <div id="warp-loader" class="mb-2 hidden">
+        <div class="progress bg-secondary rounded overflow-hidden">
+          <div id="download-progress" class="progress-bar bg-primary" role="progressbar" style="width: 0%"
+            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+      </div>
+      <button id="restart-button" type="button" class="d-none btn btn-primary">
+        Restart
+      </button>
+    </div>
+  </div>
+
+  <div id="boxModal" class="hidden">
+    <div class="centered p-4">
+      <span class="badge bg-danger">Danger</span>
+    </div>
+  </div>
+
+  <div id="loader" class="screen hidden">
+    <div class="loader">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+  </div>
+
+  <h1 id="test"></h1>
+  <p>Welcome to your Electron application. <span id="version"></span></p>
+
+  <script src="../preload.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+    integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+    integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
+  </script>
+</body>
+
+</html>
