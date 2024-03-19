@@ -19,6 +19,11 @@ ipcRenderer.on('loading', (event, state) => {
 ipcRenderer.on('valid', (event, msg) => {
     boxModel.classList.remove('hidden')
     boxModel.querySelector('span').textContent = msg
+    if (msg === 'License not found') { 
+        setTimeout(() => {
+            ipcRenderer.send('invalid-lisence')
+        }, 3000)
+    }
 })
 
 ipcRenderer.send('app_version');
