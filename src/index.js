@@ -1,19 +1,9 @@
-const {
-  app,
-  BrowserWindow,
-  ipcMain,
-  Menu,
-  ipcRenderer
-} = require("electron");
-const {
-  autoUpdater
-} = require("electron-updater");
+const { app, BrowserWindow, ipcMain, Menu, ipcRenderer } = require("electron");
+const { autoUpdater } = require("electron-updater");
 const Store = require("electron-store");
 const path = require("path");
 const apiInstance = require("./api/instanceApi");
-const {
-  mac
-} = require("address");
+const { mac } = require("address");
 
 const store = new Store();
 
@@ -21,7 +11,7 @@ if (require("electron-squirrel-startup")) {
   app.quit();
 }
 
-let authWindow;
+let authWindow, mainWindow;
 
 const createAuthWindow = () => {
   authWindow = new BrowserWindow({
@@ -43,7 +33,7 @@ const createAuthWindow = () => {
 };
 
 const createWindow = () => {
-  const mainWindow = new BrowserWindow({
+  let mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
@@ -71,26 +61,23 @@ const createWindow = () => {
   });
 };
 
-function initializeApp() {
-  let storage;
+async function initializeApp() {
   try {
-    let appSettings = store.get("appSettings");
-    if (appSettings !== undefined) {
-      storage = JSON.parse(appSettings);
-    } else {
-      storage = {};
-    }
+    let appSettings = store.get("appSettings") || false;
+    let { appId, lisence_key } = appSettings ? JSON.parse(appSettings) : {};
 
-    let mac_address = "";
-    mac((err, addr) => {
-      mac_address = addr;
+    let mac_address = await new Promise((resolve, reject) => {
+      mac((err, addr) => {
+        if (err) reject(err);
+        else resolve(addr);
+      });
     });
 
-    if (storage.appId && storage.lisence_key) {
+    if (appId && lisence_key) {
       createWindow();
-      ipcMain.on('session', (event) => {
-        event.sender.send('session-data', storage.lisence_key)
-      })
+      ipcMain.on("session", (event) => {
+        event.sender.send("session-data", lisence_key);
+      });
     } else {
       createAuthWindow();
     }
@@ -99,48 +86,44 @@ function initializeApp() {
       const lisence_key = data;
       setLoading(event, true);
 
-      apiInstance(lisence_key)
-        .post(`lisence/validated?lisence_key=${lisence_key}`)
-        .then((response) => {
-          const data = response.data;
-          if (!data.success) return handleValidate(event, data.message);
-          apiInstance(lisence_key)
-            .post(
-              `lisence/validated/callback/valid?valid=${data.success}&appId=${data.data.app_id}&mac_address=${mac_address}`
-            )
-            .then((e) => {
-              setLoading(event, false);
-              if (!data.success)
-                return handleValidate(event, data.message);
-              let appSettings = {
-                appId: e.data.data.appId,
-                lisence_key: lisence_key,
-                mac_address: mac_address
-              };
-              store.set("appSettings", JSON.stringify(appSettings));
-              if (authWindow) {
-                authWindow.close();
-                createWindow();
-              }
-            });
-        }).catch((err) => {
-          handleValidate(event, err)
-        });
+      try {
+        const response = await apiInstance(lisence_key).post(`lisence/validated?lisence_key=${lisence_key}`);
+        const responseData = response.data;
+        if (!responseData.success) return handleValidate(event, responseData.message);
+
+        const e = await apiInstance(lisence_key).post(`lisence/validated/callback/valid?valid=${responseData.success}&appId=${responseData.data.app_id}&mac_address=${mac_address}`);
+        const callbackData = e.data;
+        setLoading(event, false);
+        if (!callbackData.success) return handleValidate(event, callbackData.message);
+
+        let appSettings = {
+          appId: callbackData.data.appId,
+          lisence_key: lisence_key,
+          mac_address: mac_address,
+        };
+        store.set("appSettings", JSON.stringify(appSettings));
+        if (authWindow) {
+          authWindow.close();
+          createWindow();
+        }
+      } catch (error) {
+        handleValidate(event, error);
+      }
     });
 
-
-    ipcMain.on('re-session', (event, data) => {
+    ipcMain.on("re-session", async (event, data) => {
       const lisence_key = data;
       setLoading(event, true);
-      
-      apiInstance(lisence_key).post(`lisence/validated?lisence_key=${lisence_key}`)
-      .then((e) => {
-        const data = e.data
-        if (!data.success) return handleValidate(event, data.message)
-        setLoading(event, false);
-      })
-    })
 
+      try {
+        const response = await apiInstance(lisence_key).post(`lisence/validated?lisence_key=${lisence_key}`);
+        const responseData = response.data;
+        if (!responseData.success) return handleValidate(event, responseData.message);
+        setLoading(event, false);
+      } catch (error) {
+        handleValidate(event, error);
+      }
+    });
   } catch (error) {
     console.error("Error:", error);
   }
@@ -154,7 +137,7 @@ function setLoading(event, state) {
 
 function handleValidate(event, msg) {
   event.sender.send("valid", msg);
-  setLoading(event, false)
+  setLoading(event, false);
 }
 
 app.on("window-all-closed", () => {
@@ -177,4 +160,10 @@ ipcMain.on("app_version", (event) => {
 
 ipcMain.on("restart_app", () => {
   autoUpdater.quitAndInstall();
+});
+
+ipcMain.on("invalid-lisence", () => {
+  console.log('invalid-lisence');
+  store.delete("appSettings");
+  app.restart();
 });
