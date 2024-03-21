@@ -185,13 +185,13 @@ body {
 }
 
 .centered {
-  padding: 5px;
+  padding: 15px 30px;
   background: #eee;
   border-radius: 5px;
   display: inline-block;
   vertical-align: middle;
   max-width: 400px;
-  margin: 10px;
+  /* margin: 10px; */
 }
 
 #boxModal:before {

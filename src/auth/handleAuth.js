@@ -7,6 +7,13 @@ document.addEventListener('DOMContentLoaded', () => lisenceKey.focus())
 
 submitBtn.addEventListener('click', checkValid)
 
+lisenceKey.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        checkValid()
+    }
+})
+
+// TODO: Beautify the ui for validated
 function checkValid() {
     if (!lisenceKey.value.trim()) {
         helper.textContent = 'Lisence Key Field cannot be empty';
