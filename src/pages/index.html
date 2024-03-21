@@ -27,8 +27,9 @@
   </div>
 
   <div id="boxModal" class="hidden">
-    <div class="centered p-4">
-      <span class="badge bg-danger">Danger</span>
+    <div class="centered">
+      <span class="badge bg-danger mb-2">Error</span>
+      <p class="fw-bold">Something error ? <br><span class="fw-normal text-primary">3 seconds for relaunch the app</span></p>
     </div>
   </div>
 
@@ -42,6 +43,8 @@
 
   <h1 id="test"></h1>
   <p>Welcome to your Electron application. <span id="version"></span></p>
+  <h5 id="appId"></h5>
+  <p id="expired"></>
 
   <script src="../preload.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"

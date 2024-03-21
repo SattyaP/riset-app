@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Menu, ipcRenderer } = require("electron");
+const { app, BrowserWindow, ipcMain, Menu } = require("electron");
 const { autoUpdater } = require("electron-updater");
 const Store = require("electron-store");
 const path = require("path");
@@ -11,7 +11,7 @@ if (require("electron-squirrel-startup")) {
   app.quit();
 }
 
-let authWindow, mainWindow;
+let authWindow, mainWindow, updateCheckInProgress;
 
 const createAuthWindow = () => {
   authWindow = new BrowserWindow({
@@ -46,6 +46,7 @@ const createWindow = () => {
   mainWindow.loadFile(path.join(__dirname, "/pages/index.html"));
   app.isPackaged && Menu.setApplicationMenu(null);
 
+  // TODO : Check if update is not running on auth window
   autoUpdater.on("download-progress", (progress) => {
     mainWindow.webContents.send("update_progress", progress.percent);
   });
@@ -64,6 +65,7 @@ const createWindow = () => {
 async function initializeApp() {
   try {
     let appSettings = store.get("appSettings") || false;
+    // TODO: Check if appSettings is not empty
     let { appId, lisence_key } = appSettings ? JSON.parse(appSettings) : {};
 
     let mac_address = await new Promise((resolve, reject) => {
@@ -87,24 +89,33 @@ async function initializeApp() {
       setLoading(event, true);
 
       try {
-        const response = await apiInstance(lisence_key).post(`lisence/validated?lisence_key=${lisence_key}`);
+        const response = await apiInstance(lisence_key).post(
+          `lisence/validated?lisence_key=${lisence_key}`
+        );
         const responseData = response.data;
-        if (!responseData.success) return handleValidate(event, responseData.message);
+        if (!responseData.success)
+          return handleValidate(event, responseData.message);
 
-        const e = await apiInstance(lisence_key).post(`lisence/validated/callback/valid?valid=${responseData.success}&appId=${responseData.data.app_id}&mac_address=${mac_address}`);
+        const e = await apiInstance(lisence_key).post(
+          `lisence/validated/callback/valid?valid=${responseData.success}&appId=${responseData.data.app_id}&mac_address=${mac_address}`
+        );
         const callbackData = e.data;
         setLoading(event, false);
-        if (!callbackData.success) return handleValidate(event, callbackData.message);
+        if (!callbackData.success)
+          return handleValidate(event, callbackData.message);
 
         let appSettings = {
           appId: callbackData.data.appId,
           lisence_key: lisence_key,
           mac_address: mac_address,
+          expired: callbackData.data.end_expired,
         };
+
         store.set("appSettings", JSON.stringify(appSettings));
         if (authWindow) {
           authWindow.close();
           createWindow();
+          getProfile(event);
         }
       } catch (error) {
         handleValidate(event, error);
@@ -116,18 +127,24 @@ async function initializeApp() {
       setLoading(event, true);
 
       try {
-        const response = await apiInstance(lisence_key).post(`lisence/validated?lisence_key=${lisence_key}`);
+        const response = await apiInstance(lisence_key).post(
+          `lisence/validated?lisence_key=${lisence_key}`
+        );
         const responseData = response.data;
-        if (!responseData.success) return handleValidate(event, responseData.message);
+        if (!responseData.success)
+          return handleValidate(event, responseData.message);
         setLoading(event, false);
+        getProfile(event);
       } catch (error) {
         handleValidate(event, error);
       }
     });
   } catch (error) {
-    console.error("Error:", error);
+    console.error("Error:", error.message);
   }
 }
+
+// TODO: Handle logout app
 
 app.on("ready", async (event) => initializeApp());
 
@@ -163,7 +180,15 @@ ipcMain.on("restart_app", () => {
 });
 
 ipcMain.on("invalid-lisence", () => {
-  console.log('invalid-lisence');
   store.delete("appSettings");
-  app.restart();
+  appExit();
 });
+
+function appExit() {
+  app.relaunch();
+  app.exit();
+}
+
+function getProfile(event) {
+  event.sender.send('profile', store.get("appSettings")) ;
+}
