@@ -68,106 +68,103 @@ const createWindow = () => {
 };
 
 async function initializeApp() {
-  try {
-    let appSettings = store.get("appSettings") || false;
-    // TODO: Check if appSettings is not empty
-    let { appId, lisence_key } = appSettings ? JSON.parse(appSettings) : {};
+  let appSettings = store.get("appSettings") || false;
+  let { appId, lisence_key } = appSettings ? JSON.parse(appSettings) : {};
 
-    let mac_address = await new Promise((resolve, reject) => {
-      mac((err, addr) => {
-        if (err) reject(err);
-        else resolve(addr);
-      });
+  let mac_address = await new Promise((resolve, reject) => {
+    mac((err, addr) => {
+      if (err) reject(err);
+      else resolve(addr);
     });
+  });
 
-    if (appId && lisence_key) {
-      createWindow();
-      ipcMain.on("session", (event) => {
-        event.sender.send("session-data", lisence_key);
-      });
-    } else {
-      createAuthWindow();
-    }
-
-    ipcMain.on("lisence-filled", async (event, data) => {
-      const lisence_key = data;
-      setLoading(event, true);
-
-      try {
-        const response = await apiInstance(lisence_key).post(
-          `lisence/validated?lisence_key=${lisence_key}`
-        );
-        const responseData = response.data;
-        if (!responseData.success)
-          return handleValidate(event, responseData.message);
-
-        const e = await apiInstance(lisence_key).post(
-          `lisence/validated/callback/valid?valid=${responseData.success}&appId=${responseData.data.app_id}&mac_address=${mac_address}`
-        );
-        const callbackData = e.data;
-        setLoading(event, false);
-        if (!callbackData.success)
-          return handleValidate(event, callbackData.message);
-
-        let appSettings = {
-          appId: callbackData.data.appId,
-          lisence_key: lisence_key,
-          mac_address: mac_address,
-          expired: callbackData.data.end_expired,
-        };
-
-        store.set("appSettings", JSON.stringify(appSettings));
-        if (authWindow) {
-          authWindow.close();
-          createWindow();
-        }
-      } catch (error) {
-        handleValidate(event, error);
-      }
+  if (appId && lisence_key) {
+    createWindow();
+    ipcMain.on("session", (event) => {
+      event.sender.send("session-data", lisence_key);
     });
-
-    ipcMain.on("re-session", async (event, data) => {
-      const lisence_key = data;
-      setLoading(event, true);
-
-      try {
-        const response = await apiInstance(lisence_key).post(
-          `lisence/validated?lisence_key=${lisence_key}`
-        );
-        const responseData = response.data;
-        if (!responseData.success)
-          return handleValidate(event, responseData.message);
-        setLoading(event, false);
-      } catch (error) {
-        handleValidate(event, error);
-      }
-    });
-  } catch (error) {
-    console.error("Error:", error.message);
+  } else {
+    createAuthWindow();
   }
+
+  ipcMain.on("lisence-filled", async (event, data) => {
+    const lisence_key = data;
+    setLoading(event, true);
+
+    try {
+      const response = await apiInstance(lisence_key).post(
+        `lisence/validated?lisence_key=${lisence_key}`
+      );
+      const responseData = response.data;
+      if (!responseData.success)
+        return handleError(event, responseData.message);
+
+      const e = await apiInstance(lisence_key).post(
+        `lisence/validated/callback/valid?valid=${responseData.success}&appId=${responseData.data.app_id}&mac_address=${mac_address}`
+      );
+      const callbackData = e.data;
+      if (!callbackData.success)
+        return handleError(event, callbackData.message);
+
+      let appSettings = {
+        appId: callbackData.data.appId,
+        lisence_key: lisence_key,
+        mac_address: mac_address,
+        expired: callbackData.data.end_expired,
+        customer_email: responseData.data.customer_email,
+      };
+
+      store.set("appSettings", JSON.stringify(appSettings));
+      if (authWindow) {
+        authWindow.close();
+        createWindow();
+        setLoading(event, false);
+      }
+    } catch (error) {
+      handleError(event, error);
+    }
+  });
+
+  ipcMain.on("re-session", async (event, data) => {
+    const lisence_key = data;
+    setLoading(event, true);
+
+    try {
+      const response = await apiInstance(lisence_key).post(
+        `lisence/validated?lisence_key=${lisence_key}`
+      ).catch((error) => { return handleError(event, error, true) });
+      const responseData = response.data;
+      if (!responseData.success) return handleError(event, responseData.message);
+      setLoading(event, false);
+    } catch (error) {
+      handleError(event, error, true);
+    }
+  });
 }
 
+// TODO: Handle logout failed
 ipcMain.on("logout", async (event) => {
   const { appId, lisence_key } = JSON.parse(store.get("appSettings"));
   const response = await apiInstance(lisence_key).post(
     `logout?lisence_key=${lisence_key}`
-  );
+  ).catch((error) => { return handleError(event, error, true) });
   const responseData = response.data;
-  if (!responseData.success) return handleValidate(event, responseData.message);
+  if (!responseData.success) return handleError(event, responseData.message);
   store.delete("appSettings");
   appExit();
 });
 
-ipcMain.on('status-license', async (event) => {
+ipcMain.on("status-license", async (event) => {
   setLoading(event, true);
   const { appId, lisence_key } = JSON.parse(store.get("appSettings"));
-  const response = await apiInstance(lisence_key).get(`status?lisence_key=${lisence_key}`);
+  const response = await apiInstance(lisence_key).get(
+    `status?lisence_key=${lisence_key}`
+  ).catch((error) => { return handleError(event, error, true) });
   const responseData = response.data;
-  if (!responseData.success) return handleValidate(event, responseData.message);
-  event.sender.send('status-license', responseData.data.status);
+  if (!responseData.success) return handleError(event, responseData.message);
+  event.sender.send("status-license", responseData.data.status);
   setLoading(event, false);
 });
-
 
 app.on("ready", async (event) => initializeApp());
 
@@ -175,8 +172,8 @@ function setLoading(event, state) {
   event.sender.send("loading", state);
 }
 
-function handleValidate(event, msg) {
-  event.sender.send("valid", msg);
+function handleError(event, msg, isError = false) {
+  event.sender.send("error-found", msg, isError);
   setLoading(event, false);
 }
 
@@ -202,9 +199,9 @@ ipcMain.on("restart_app", () => {
   autoUpdater.quitAndInstall();
 });
 
-ipcMain.on("invalid-lisence", () => {
-  store.delete("appSettings");
-  appExit();
+ipcMain.on("error", (event, isError) => {
+  !isError && store.delete("appSettings");
+  !isError && appExit();
 });
 
 function appExit() {
