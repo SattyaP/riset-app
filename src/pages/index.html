@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-bs-theme="dark">
 
 <head>
   <meta charset="UTF-8" />
@@ -7,10 +7,11 @@
   <link rel="stylesheet" href="../assets/styles/index.css" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 
 <body>
-
+  <!-- Update UI -->
   <div id="warp" class="overlay mx-auto px-lg-4 px-md-4 hidden">
     <div class="col-lg-4 col-md-6 col-sm-3" id="notification">
       <p id="message" class="mb-2"></p>
@@ -26,13 +27,16 @@
     </div>
   </div>
 
+  <!-- Error Handle -->
   <div id="boxModal" class="hidden">
     <div class="centered">
-      <span class="badge bg-danger mb-2">Error</span>
-      <p class="fw-bold">Something error ? <br><span class="fw-normal text-primary">3 seconds for relaunch the app</span></p>
+      <span class="badge bg-danger text-white mb-2">Error</span>
+      <p class="fw-bold text-dark">Something error ? <br><span id="msg" class="fw-normal text-primary">3 seconds for relaunch the
+          app</span></p>
     </div>
   </div>
 
+  <!-- Loader -->
   <div id="loader" class="screen hidden">
     <div class="loader">
       <div class="dot"></div>
@@ -41,10 +45,51 @@
     </div>
   </div>
 
-  <h1 id="test"></h1>
-  <p>Welcome to your Electron application. <span id="version"></span></p>
-  <h5 id="appId"></h5>
-  <p id="expired"></>
+  <!-- Main -->
+  <main role="main" class="container-fluid">
+    <div class="row">
+      <div class="col-sm-auto bg-dark border-end border-light sticky-top">
+        <div class="d-flex flex-sm-column flex-row flex-nowrap bg-dark align-items-center sticky-top">
+          <a href="#" class="d-block p-3 link-dark text-decoration-none" title="" data-bs-toggle="tooltip"
+            data-bs-placement="right" data-bs-original-title="Icon-only">
+            <i class="bi text-danger bi-app-indicator fs-5"></i>
+          </a>
+          <ul
+            class="nav nav-pills nav-flush flex-sm-column flex-row flex-nowrap mb-auto mx-auto text-center align-items-center">
+            <li class="nav-item">
+              <a role="button" href="index.html" class="border-bottom nav-link py-3 px-2" title="" data-bs-toggle="tooltip"
+                data-bs-placement="right" data-bs-original-title="Home">
+                <i role="button" class="text-primary bi-house fs-5"></i>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a role="button" href="settings.html" class="border-bottom nav-link py-3 px-2" title="" data-bs-toggle="tooltip"
+                data-bs-placement="right" data-bs-original-title="Settings">
+                <i role="button" class="text-white bi bi-gear fs-5"></i>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-sm min-vh-100">
+        <header class="border-bottom p-3 align-items-center d-flex align-middle gap-3">
+          <h5 class="text-danger">RisetApp <span id="version"></span></h5>
+          <span class="badge connection-status">Online</span>
+        </header>
+        <div class="p-3">
+          <!-- goes here -->
+        </div>
+
+        <div class="footer">
+          <p>Copyright © AlsavSoftware 2024</p>
+          <p id="appId"></p>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  
+  
 
   <script src="../preload.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+
+    <link rel="stylesheet" href="../assets/styles/index.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <head>
+
+    <body>
+        <!-- Error Handle -->
+        <div id="boxModal" class="hidden">
+            <div class="centered">
+                <span class="badge bg-danger text-white mb-2">Error</span>
+                <p class="fw-bold text-dark">Something error ? <br><span id="msg" class="fw-normal text-primary">3
+                        seconds for
+                        relaunch the
+                        app</span></p>
+            </div>
+        </div>
+
+        <!-- Loader -->
+        <div id="loader" class="screen hidden">
+            <div class="loader">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+
+        <main class="container-fluid">
+            <div class="row">
+                <div class="col-sm-auto bg-dark border-end border-light sticky-top">
+                    <div class="d-flex flex-sm-column flex-row flex-nowrap bg-dark align-items-center sticky-top">
+                        <a href="#" class="d-block p-3 link-dark text-decoration-none" title="" data-bs-toggle="tooltip"
+                            data-bs-placement="right" data-bs-original-title="Icon-only">
+                            <i class="bi text-danger bi-app-indicator fs-5"></i>
+                        </a>
+                        <ul
+                            class="nav nav-pills nav-flush flex-sm-column flex-row flex-nowrap mb-auto mx-auto text-center align-items-center">
+                            <li class="nav-item">
+                                <a role="button" href="index.html" class="border-bottom nav-link py-3 px-2" title=""
+                                    data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Home">
+                                    <i role="button" class="text-white bi-house fs-5"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a role="button" href="settings.html" class="border-bottom nav-link py-3 px-2" title=""
+                                    data-bs-toggle="tooltip" data-bs-placement="right"
+                                    data-bs-original-title="Settings">
+                                    <i role="button" class="text-primary bi bi-gear fs-5"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-sm min-vh-100">
+                    <header class="border-bottom p-3 align-items-center d-flex align-middle gap-3">
+                        <h5 class="text-danger">RisetApp <span id="version"></span></h5>
+                        <span class="badge connection-status">Online</span>
+                    </header>
+                    <div class="p-3">
+                        <h5 class="appId"></h5>
+                        <div class="d-flex gap-3 mb-3">
+                            <div id="expired"></div>
+                            <span id="status" class="badge text-bg-info"></span>
+                        </div>
+                        <button class="btn btn-danger" id="logout" type="button">Logout</button>
+                    </div>
+                    <div class="footer">
+                        <p>Copyright © AlsavSoftware 2024</p>
+                        <p class="appId"></p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <script src="../assets/js/settings.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous">
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+            integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous">
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
+        </script>
+    </body>
+
+</html>

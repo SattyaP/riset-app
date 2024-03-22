@@ -34,8 +34,13 @@ const createAuthWindow = () => {
 
 const createWindow = () => {
   let mainWindow = new BrowserWindow({
-    width: 800,
+    width: 1280,
     height: 600,
+    titleBarStyle: "hidden",
+    titleBarOverlay: {
+      color: "#212529",
+      symbolColor: "#fff",
+    },
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
@@ -115,7 +120,6 @@ async function initializeApp() {
         if (authWindow) {
           authWindow.close();
           createWindow();
-          getProfile(event);
         }
       } catch (error) {
         handleValidate(event, error);
@@ -134,7 +138,6 @@ async function initializeApp() {
         if (!responseData.success)
           return handleValidate(event, responseData.message);
         setLoading(event, false);
-        getProfile(event);
       } catch (error) {
         handleValidate(event, error);
       }
@@ -144,7 +147,27 @@ async function initializeApp() {
   }
 }
 
-// TODO: Handle logout app
+ipcMain.on("logout", async (event) => {
+  const { appId, lisence_key } = JSON.parse(store.get("appSettings"));
+  const response = await apiInstance(lisence_key).post(
+    `logout?lisence_key=${lisence_key}`
+  );
+  const responseData = response.data;
+  if (!responseData.success) return handleValidate(event, responseData.message);
+  store.delete("appSettings");
+  appExit();
+});
+
+ipcMain.on('status-license', async (event) => {
+  setLoading(event, true);
+  const { appId, lisence_key } = JSON.parse(store.get("appSettings"));
+  const response = await apiInstance(lisence_key).get(`status?lisence_key=${lisence_key}`);
+  const responseData = response.data;
+  if (!responseData.success) return handleValidate(event, responseData.message);
+  event.sender.send('status-license', responseData.data.status);
+  setLoading(event, false);
+});
+
 
 app.on("ready", async (event) => initializeApp());
 
@@ -189,6 +212,6 @@ function appExit() {
   app.exit();
 }
 
-function getProfile(event) {
-  event.sender.send('profile', store.get("appSettings")) ;
-}
+ipcMain.on("get-profile", (event) => {
+  event.sender.send("profile", store.get("appSettings"));
+});

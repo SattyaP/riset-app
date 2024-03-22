@@ -16,7 +16,7 @@
   },
   "keywords": [],
   "author": {
-    "name": "“SattyaP”",
+    "name": "SattyaP",
     "email": "stylearning7@gmail.com"
   },
   "license": "MIT",
@@ -26,6 +26,7 @@
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.1.0",
     "electron-updater": "^6.1.7",
+    "sweetalert2": "^11.6.13",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
