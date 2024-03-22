@@ -1,6 +1,6 @@
 const { ipcRenderer } = require("electron");
-const version = document.getElementById("version");
 const warp = document.getElementById("warp");
+const version = document.getElementById("version");
 const message = document.getElementById("message");
 const restartButton = document.getElementById("restart-button");
 const loaderDownload = document.getElementById("warp-loader");
@@ -19,24 +19,44 @@ ipcRenderer.on("loading", (event, state) => {
 ipcRenderer.on("valid", (event, msg) => {
   boxModel.classList.remove("hidden");
   boxModel.querySelector("span").textContent = msg;
-  // TODO: Handle msg error cause sometimes the error is not same
   setTimeout(() => {
     ipcRenderer.send("invalid-lisence");
   }, 3000);
 });
 
-ipcRenderer.on('profile', (event, data) => {
-    const profile = JSON.parse(data);
-    document.getElementById('appId').innerText = `AppId : ${profile.appId}`;
-    document.getElementById('expired').innerText = `End Expired : ${profile.expired}`;
+ipcRenderer.send("get-profile");
+ipcRenderer.on("profile", (event, data) => {
+  const profile = JSON.parse(data);
+  document.getElementById("appId").innerText = profile.appId;
 });
 
-let updateProgress = 0;
+const updateOnlineStatus = () => {
+  document.querySelector('.connection-status').innerHTML = navigator.onLine ? 'online' : 'offline'
+  if (!navigator.onLine) {
+    boxModel.classList.remove("hidden");
+    document.getElementById('msg').textContent = "You are offline, please check your internet connection."
+    document.querySelector('.connection-status').classList.add('text-bg-danger')
+  } else {
+    boxModel.classList.add("hidden");
+    boxModel.querySelector("span").textContent = "";
+    document.querySelector('.connection-status').classList.remove('text-bg-danger')
+    document.querySelector('.connection-status').classList.add('text-bg-success')
+  }
+}
+
+window.addEventListener('online', updateOnlineStatus)
+window.addEventListener('offline', updateOnlineStatus)
+
+updateOnlineStatus();
+
+// Update Feature
 
 ipcRenderer.send("app_version");
 ipcRenderer.on("app_version", (event, arg) => {
   version.innerText = "v" + arg.version;
 });
+
+let updateProgress = 0;
 
 ipcRenderer.on("update_available", () => {
   ipcRenderer.removeAllListeners("update_available");

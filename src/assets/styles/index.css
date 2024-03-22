@@ -201,3 +201,18 @@ body {
   height: 100%;
   vertical-align: middle;
 }
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  right: 20px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.footer > p {
+  font-size: 12px;
+  font-style: italic;
+  color: #919191;
+}

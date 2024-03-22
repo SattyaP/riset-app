@@ -16,7 +16,7 @@ lisenceKey.addEventListener('keydown', (e) => {
 // TODO: Beautify the ui for validated
 function checkValid() {
     if (!lisenceKey.value.trim()) {
-        helper.textContent = 'Lisence Key Field cannot be empty';
+        helper.textContent = 'Lisence Key field cannot be empty';
         helper.style.color = 'red';
     } else {
         helper.textContent = 'Enter the valid lisence key';
