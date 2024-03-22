@@ -16,11 +16,12 @@ ipcRenderer.on("loading", (event, state) => {
   state ? loader.classList.remove("hidden") : loader.classList.add("hidden");
 });
 
-ipcRenderer.on("valid", (event, msg) => {
+ipcRenderer.on("error-found", (event, msg, isError) => {
   boxModel.classList.remove("hidden");
-  boxModel.querySelector("span").textContent = msg;
+  boxModel.querySelector("span").textContent = isError ? "Error" : msg;
+  if (isError) document.getElementById('msg').innerHTML = "An error occurred, please try again later."
   setTimeout(() => {
-    ipcRenderer.send("invalid-lisence");
+    ipcRenderer.send("error", isError);
   }, 3000);
 });
 
