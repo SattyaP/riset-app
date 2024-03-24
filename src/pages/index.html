@@ -31,7 +31,8 @@
   <div id="boxModal" class="hidden">
     <div class="centered">
       <span class="badge bg-danger text-white mb-2">Error</span>
-      <p class="fw-bold text-dark">Something error ? <br><span id="msg" class="fw-normal text-primary">3 seconds for relaunch the
+      <p class="fw-bold text-dark">Something error ? <br><span id="msg" class="fw-normal text-primary">3 seconds for
+          relaunch the
           app</span></p>
     </div>
   </div>
@@ -57,14 +58,14 @@
           <ul
             class="nav nav-pills nav-flush flex-sm-column flex-row flex-nowrap mb-auto mx-auto text-center align-items-center">
             <li class="nav-item">
-              <a role="button" href="index.html" class="border-bottom nav-link py-3 px-2" title="" data-bs-toggle="tooltip"
-                data-bs-placement="right" data-bs-original-title="Home">
+              <a role="button" href="index.html" class="border-bottom nav-link py-3 px-2" title=""
+                data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Home">
                 <i role="button" class="text-primary bi-house fs-5"></i>
               </a>
             </li>
             <li class="nav-item">
-              <a role="button" href="settings.html" class="border-bottom nav-link py-3 px-2" title="" data-bs-toggle="tooltip"
-                data-bs-placement="right" data-bs-original-title="Settings">
+              <a role="button" href="settings.html" class="border-bottom nav-link py-3 px-2" title=""
+                data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Settings">
                 <i role="button" class="text-white bi bi-gear fs-5"></i>
               </a>
             </li>
@@ -81,16 +82,17 @@
         </div>
 
         <div class="footer">
-          <p>Copyright © AlsavSoftware 2024</p>
+          <p id="copyright"></p>
           <p id="appId"></p>
         </div>
       </div>
     </div>
   </main>
-  
-  
-  
 
+  <script>
+    document.getElementById('copyright').innerHTML =
+      `&copy; ${new Date().getFullYear()} AlsavSoftware. All rights reserved.`
+  </script>
   <script src="../preload.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
     integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous">

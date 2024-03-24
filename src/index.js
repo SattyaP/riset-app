@@ -130,11 +130,14 @@ async function initializeApp() {
     setLoading(event, true);
 
     try {
-      const response = await apiInstance(lisence_key).post(
-        `lisence/validated?lisence_key=${lisence_key}`
-      ).catch((error) => { return handleError(event, error, true) });
+      const response = await apiInstance(lisence_key)
+        .post(`lisence/validated?lisence_key=${lisence_key}`)
+        .catch((error) => {
+          return handleError(event, error, true);
+        });
       const responseData = response.data;
-      if (!responseData.success) return handleError(event, responseData.message);
+      if (!responseData.success)
+        return handleError(event, responseData.message);
       setLoading(event, false);
     } catch (error) {
       handleError(event, error, true);
@@ -142,28 +145,40 @@ async function initializeApp() {
   });
 }
 
-// TODO: Handle logout failed
 ipcMain.on("logout", async (event) => {
-  const { appId, lisence_key } = JSON.parse(store.get("appSettings"));
-  const response = await apiInstance(lisence_key).post(
-    `logout?lisence_key=${lisence_key}`
-  ).catch((error) => { return handleError(event, error, true) });
-  const responseData = response.data;
-  if (!responseData.success) return handleError(event, responseData.message);
-  store.delete("appSettings");
-  appExit();
+  try {
+    const { appId, lisence_key } = JSON.parse(store.get("appSettings"));
+    const response = await apiInstance(lisence_key)
+      .post(`logout?lisence_key=${lisence_key}`)
+      .catch((error) => {
+        return handleError(event, error, true);
+      });
+    const responseData = response.data;
+    if (!responseData.success) return handleError(event, responseData.message);
+    store.delete("appSettings");
+    appExit();
+  } catch (error) {
+    handleError(event, error, true);
+  }
 });
 
 ipcMain.on("status-license", async (event) => {
   setLoading(event, true);
-  const { appId, lisence_key } = JSON.parse(store.get("appSettings"));
-  const response = await apiInstance(lisence_key).get(
-    `status?lisence_key=${lisence_key}`
-  ).catch((error) => { return handleError(event, error, true) });
-  const responseData = response.data;
-  if (!responseData.success) return handleError(event, responseData.message);
-  event.sender.send("status-license", responseData.data.status);
-  setLoading(event, false);
+
+  try {
+    const { appId, lisence_key } = JSON.parse(store.get("appSettings"));
+    const response = await apiInstance(lisence_key)
+      .get(`status?lisence_key=${lisence_key}`)
+      .catch((error) => {
+        return handleError(event, error, true);
+      });
+    const responseData = response.data;
+    if (!responseData.success) return handleError(event, responseData.message);
+    event.sender.send("status-license", responseData.data.status);
+    setLoading(event, false);
+  } catch (error) {
+    handleError(event, error, true);
+  }
 });
 
 app.on("ready", async (event) => initializeApp());
