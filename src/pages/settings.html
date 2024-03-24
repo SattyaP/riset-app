@@ -75,13 +75,16 @@
                         <button class="btn btn-danger" id="logout" type="button">Logout</button>
                     </div>
                     <div class="footer">
-                        <p>Copyright © AlsavSoftware 2024</p>
+                        <p id="copyright"></p>
                         <p class="appId"></p>
                     </div>
                 </div>
             </div>
         </main>
 
+        <script>
+            document.getElementById('copyright').innerHTML =`&copy; ${new Date().getFullYear()} AlsavSoftware. All rights reserved.`
+        </script>
         <script src="../assets/js/settings.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
             integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous">

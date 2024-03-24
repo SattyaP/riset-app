@@ -5,24 +5,16 @@ const helper = document.getElementById('lisence_help')
 
 document.addEventListener('DOMContentLoaded', () => lisenceKey.focus())
 
-submitBtn.addEventListener('click', checkValid)
+submitBtn.addEventListener('click', CheckLisence)
 
 lisenceKey.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
-        checkValid()
+        CheckLisence()
     }
 })
 
-// TODO: Beautify the ui for validated
-function checkValid() {
-    if (!lisenceKey.value.trim()) {
-        helper.textContent = 'Lisence Key field cannot be empty';
-        helper.style.color = 'red';
-    } else {
-        helper.textContent = 'Enter the valid lisence key';
-        helper.style.color = '';
-        ipcRenderer.send('lisence-filled', data = lisenceKey.value)
-    }
+function CheckLisence() {
+    ipcRenderer.send('lisence-filled', data = lisenceKey.value)
 }
 
 ipcRenderer.on('loading', (event, loading) => {
@@ -31,7 +23,7 @@ ipcRenderer.on('loading', (event, loading) => {
     lisenceKey.disabled = loading ? true : false
 })
 
-ipcRenderer.on('valid', (event, msg) => {
+ipcRenderer.on('error-found', (event, msg) => {
     helper.style.color = 'red';
     helper.textContent = msg
 })

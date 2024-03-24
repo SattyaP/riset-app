@@ -7,7 +7,6 @@ const boxModel = document.getElementById("boxModal");
 ipcRenderer.send("get-profile");
 ipcRenderer.on("profile", (event, data) => {
   const profile = JSON.parse(data);
-  console.log(profile);
   document
     .querySelectorAll(".appId")
     .forEach((el, i) =>
@@ -15,7 +14,9 @@ ipcRenderer.on("profile", (event, data) => {
         ? (el.innerText = profile.appId)
         : (el.innerText = `App ID : ${profile.appId}`)
     );
-  document.querySelector(".customer-email").innerText = `Email : ${profile.customer_email}`;
+  document.querySelector(
+    ".customer-email"
+  ).innerText = `Email : ${profile.customer_email}`;
   document.getElementById(
     "expired"
   ).innerText = `End Expired : ${profile.expired}`;
@@ -24,7 +25,9 @@ ipcRenderer.on("profile", (event, data) => {
 ipcRenderer.on("error-found", (event, msg, isError) => {
   boxModel.classList.remove("hidden");
   boxModel.querySelector("span").textContent = isError ? "Error" : msg;
-  if (isError) document.getElementById('msg').innerHTML = "An error occurred, please try again later."
+  if (isError)
+    document.getElementById("msg").innerHTML =
+      "An error occurred, please try again later.";
 });
 
 ipcRenderer.on("loading", (event, state) => {
